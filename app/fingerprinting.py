@@ -27,21 +27,21 @@ def _build_grid(image: np.ndarray, grid_factor: int):
     return np.array(cells), new_width, new_height
 
 
-def _build_fingerprint(metadata):
+def _build_fingerprint(metadata: dict[str, any]):
     metadata = json.dumps(metadata)
     fingerprint = seahash.hash(metadata.encode("utf-8"))
-    return metadata, f"{fingerprint:X}"
+    return f"{fingerprint:X}"
 
 
-def _embed_fingerprint(idx, cell, fingerprint: str):
-    _, temp_cell = tempfile.mkstemp(".png", f"cell_{idx}")
+def _embed_fingerprint(cell: np.ndarray, fingerprint: str):
+    _, temp_cell = tempfile.mkstemp(".png", f"cell")
     Image.fromarray(cell).save(temp_cell)
     fingerprinted = lsb.hide(temp_cell, fingerprint, auto_convert_rgb=True)
     fingerprinted = np.array(fingerprinted)
     return fingerprinted
 
 
-def _merge_cells(cells, width, height, grid_factor):
+def _merge_cells(cells: np.ndarray, width: int, height: int, grid_factor: int):
     canvas = np.zeros((height, width, 3), dtype=np.uint8)
     for x in range(grid_factor):
         for y in range(grid_factor):
@@ -74,13 +74,13 @@ def fingerprint_image(image: np.ndarray, metadata: dict[str, any], grid_factor: 
         grid_factor (int, optional): How many subgrids should be added to the image. Defaults to 4.
 
     Returns:
-        (np.ndarray, str, metadata): The fingerprinted image, the fingerprint, and the metadata
+        (np.ndarray, str): The fingerprinted image and the fingerprint.
     """
     cells, new_width, new_height = _build_grid(image, grid_factor)
-    metadata, fingerprint = _build_fingerprint(metadata)
+    fingerprint = _build_fingerprint(metadata)
     cells = map(lambda x: _embed_fingerprint(x[0], x[1], fingerprint), enumerate(cells))
     fingerprinted = _merge_cells(cells, new_width, new_height, grid_factor)
-    return fingerprinted, fingerprint, metadata
+    return fingerprinted, fingerprint
 
 
 def extract(image: np.ndarray) -> str | None:

@@ -1,12 +1,16 @@
 """Renderiza la página principal."""
 
 import io
+import json
 from datetime import datetime
 
 import fingerprinting
 import numpy as np
 import streamlit as st
 from PIL import Image
+from sqlitedict import SqliteDict
+
+db = SqliteDict("traces.db", tablename="demo", autocommit=True)
 
 
 def _render_lockfile():
@@ -29,31 +33,26 @@ def _render_lockfile():
 
     if image_file is not None:
         st.image(image_file)
-        # TODO: Llamada función Rubén uwu
+        download_time = datetime.now()
         metadata = {
-            "timestamp": datetime.now().timestamp(),
+            "timestamp": download_time.timestamp(),
+            "download_date": download_time.strftime("%D/%M/%Y, %H:%M:%S"),
             "parent_id": parent_id,
             "child_id": child_id,
             "security_level": level,
         }
 
-        fingerprinted, fingerprint, metadata = fingerprinting.fingerprint_image(
+        fingerprinted, fingerprint = fingerprinting.fingerprint_image(
             np.array(Image.open(image_file)), metadata
         )
+        db[fingerprint] = json.dumps(metadata)
         fingerprinted_buffer = io.BytesIO()
         Image.fromarray(fingerprinted).save(fingerprinted_buffer, format="PNG")
-        # TODO: Añadir a bbdd
 
         st.download_button(
             label=":lock: ¡Descarga tu imagen protegida!",
             data=fingerprinted_buffer.getvalue(),
             file_name="fingerprinted.png",
-        )
-
-        st.download_button(
-            label=":lock: ¡Descarga tu imagen original!",
-            data=image_file,
-            file_name="original.png",
         )
 
 
@@ -70,15 +69,10 @@ def _render_unlockfile():
                 status.update(label="Huella digital encontrada!", expanded=True, state="complete")
                 st.success(fingerprint)
                 # TODO: Buscar en bbdd
+                metadata = db[fingerprint]
+                st.json(metadata)
             if fingerprint is None:
                 status.status(label="No se encontro ninguna huella ¯\_(ツ)_/¯", state="error")
-        st.json(
-            {
-                "parent_id": "123456789",
-                "child_id": "987654321",
-                "level": "Nivel 1 (no compartir con nadie)",
-            }
-        )
 
 
 def render_main():
