@@ -67,8 +67,8 @@
 		// 	"cudaVersion": "11.8",
 		// 	"cudnnVersion": "8.6.0.163"
 		// },
-		"ghcr.io/dhoeric/features/google-cloud-cli:1": {
-			"installGkeGcloudAuthPlugin": true
-		}
+		// "ghcr.io/dhoeric/features/google-cloud-cli:1": {
+		// 	"installGkeGcloudAuthPlugin": true
+		// }
 	}
 }
