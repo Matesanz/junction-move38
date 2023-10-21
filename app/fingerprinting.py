@@ -1,6 +1,6 @@
 """This module is used to fingerprint images."""
 import json
-from os import makedirs
+import tempfile
 
 import numpy as np
 import seahash
@@ -30,13 +30,13 @@ def _build_grid(image: np.ndarray, grid_factor: int):
 def _build_fingerprint(metadata):
     metadata = json.dumps(metadata)
     fingerprint = seahash.hash(metadata.encode("utf-8"))
-    return metadata, fingerprint
+    return metadata, f"{fingerprint:X}"
 
 
-def _embed_fingerprint(idx, cell, fingerprint):
-    tempfile = f"tmp/cells/{idx}.png"
-    Image.fromarray(cell).save(tempfile)
-    fingerprinted = lsb.hide(tempfile, str(fingerprint), auto_convert_rgb=True)
+def _embed_fingerprint(idx, cell, fingerprint: str):
+    _, temp_cell = tempfile.mkstemp(".png", f"cell_{idx}")
+    Image.fromarray(cell).save(temp_cell)
+    fingerprinted = lsb.hide(temp_cell, fingerprint, auto_convert_rgb=True)
     fingerprinted = np.array(fingerprinted)
     return fingerprinted
 
@@ -74,38 +74,31 @@ def fingerprint_image(image: np.ndarray, metadata: dict[str, any], grid_factor: 
         grid_factor (int, optional): How many subgrids should be added to the image. Defaults to 4.
 
     Returns:
-        _type_: The fingerprinted image, the fingerprint, and the metadata
+        (np.ndarray, str, metadata): The fingerprinted image, the fingerprint, and the metadata
     """
     cells, new_width, new_height = _build_grid(image, grid_factor)
     metadata, fingerprint = _build_fingerprint(metadata)
-    makedirs("tmp/cells")
-    makedirs("tmp/fingerprinted")
     cells = map(lambda x: _embed_fingerprint(x[0], x[1], fingerprint), enumerate(cells))
     fingerprinted = _merge_cells(cells, new_width, new_height, grid_factor)
     return fingerprinted, fingerprint, metadata
 
 
-def extract(image: np.ndarray):
+def extract(image: np.ndarray) -> str | None:
     """Extract fingerprint from image.
 
     Args:
         image (np.ndarray): Image with a fingerprint.
 
-    Raises:
-        ValueError: if image is not hashed.
-
     Returns:
-        int: Fingerprint
+        int | None: Fingerprint, if there's one.
     """
-    makedirs("tmp/reveal")
     for grid_factor in range(2, 128):
         cells, _, _ = _build_grid(image, grid_factor)
         for idx, cell in enumerate(cells):
-            tempfile = f"tmp/reveal/{idx}.png"
-            Image.fromarray(cell).save(tempfile)
+            _, temp_reveal = tempfile.mkstemp(".png", f"cell_{idx}")
+            Image.fromarray(cell).save(temp_reveal)
             try:
-                return int(lsb.reveal(tempfile))
-
+                return lsb.reveal(temp_reveal)
             except Exception:
                 continue
-    raise ValueError("No se pudo extraer informacion de la imagen")
+    return None
