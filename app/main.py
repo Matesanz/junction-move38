@@ -1,6 +1,11 @@
 """Renderiza la página principal."""
 
 import streamlit as st
+import fingerprinting
+import numpy as np
+from PIL import Image
+from datetime import datetime
+import io
 
 
 def _render_lockfile():
@@ -24,11 +29,23 @@ def _render_lockfile():
     if image_file is not None:
         st.image(image_file)
         # TODO: Llamada función Rubén uwu
+        metadata = {
+            "timestamp": datetime.now().timestamp(),
+            "parent_id": parent_id,
+            "child_id": child_id,
+            "security_level": level
+        }
+
+        fingerprinted, fingerprint, metadata = fingerprinting.fingerprint_image(
+            np.array(Image.open(image_file)), metadata)
+        fingerprinted_buffer = io.BytesIO()
+        Image.fromarray(fingerprinted).save(fingerprinted_buffer, format='PNG')
+        # TODO: Añadir a bbdd
 
         st.download_button(
             label=":lock: ¡Descarga tu imagen protegida!",
-            data=image_file,
-            file_name=image_file.name,
+            data=fingerprinted_buffer.getvalue(),
+            file_name='fingerprinted.png',
         )
 
 
