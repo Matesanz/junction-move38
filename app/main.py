@@ -33,19 +33,26 @@ def _render_lockfile():
             "timestamp": datetime.now().timestamp(),
             "parent_id": parent_id,
             "child_id": child_id,
-            "security_level": level
+            "security_level": level,
         }
 
         fingerprinted, fingerprint, metadata = fingerprinting.fingerprint_image(
-            np.array(Image.open(image_file)), metadata)
+            np.array(Image.open(image_file)), metadata
+        )
         fingerprinted_buffer = io.BytesIO()
-        Image.fromarray(fingerprinted).save(fingerprinted_buffer, format='PNG')
+        Image.fromarray(fingerprinted).save(fingerprinted_buffer, format="PNG")
         # TODO: Añadir a bbdd
 
         st.download_button(
             label=":lock: ¡Descarga tu imagen protegida!",
             data=fingerprinted_buffer.getvalue(),
-            file_name='fingerprinted.png',
+            file_name="fingerprinted.png",
+        )
+
+        st.download_button(
+            label=":lock: ¡Descarga tu imagen original!",
+            data=image_file,
+            file_name="original.png",
         )
 
 
@@ -56,7 +63,13 @@ def _render_unlockfile():
         st.image(image_file)
 
         # TODO: llama a la función de Rubén uwu
-
+        with st.status("Buscando huella digital...", state="running") as status:
+            fingerprint = fingerprinting.extract(np.array(Image.open(image_file)))
+            if fingerprint is not None:
+                status.update(label="Huella digital encontrada!", expanded=True, state="complete")
+                st.success(fingerprint)
+            if fingerprint is None:
+                status.status(label="No se encontro ninguna huella ¯\_(ツ)_/¯", state="error")
         st.json(
             {
                 "parent_id": "123456789",
