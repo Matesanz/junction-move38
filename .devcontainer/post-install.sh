@@ -6,20 +6,6 @@ GREEN='\033[92m'
 BLUE='\033[94m'
 END='\033[0m'
 
-# configure gcloud: this allows to pull private libraries from our GCP Registry
-echo -e "🔧  Configuring GCloud to access to Sngular DAIOT private libraries..${END}\n"
-gcloud_credentials_file="pull_sa.json"
-if [ ! -f "$gcloud_credentials_file" ]; then
-    echo -e "${BLUE}ℹ️  It looks like this is the first time you run this script, please provide the following GCloud information:${END}\n"
-    gcloud config set project sngular-daiot
-    gcloud auth application-default login
-    cp /home/vscode/.config/gcloud/application_default_credentials.json pull_sa.json
-fi
-echo 'export GOOGLE_CLOUD_PROJECT=sngular-daiot' >> ~/.bashrc
-echo "export GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/${gcloud_credentials_file}" >> ~/.bashrc
-export GOOGLE_CLOUD_PROJECT=sngular-daiot
-export GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/${gcloud_credentials_file}
-echo -e "${GREEN}✅  GCloud Configured!${END}\n"
 
 # initialize pyenv
 echo -e "${BLUE}🔧  Initializing Pyenv...${END}\n"
