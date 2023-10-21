@@ -1,11 +1,12 @@
 """Renderiza la página principal."""
 
-import streamlit as st
+import io
+from datetime import datetime
+
 import fingerprinting
 import numpy as np
+import streamlit as st
 from PIL import Image
-from datetime import datetime
-import io
 
 
 def _render_lockfile():
@@ -68,6 +69,7 @@ def _render_unlockfile():
             if fingerprint is not None:
                 status.update(label="Huella digital encontrada!", expanded=True, state="complete")
                 st.success(fingerprint)
+                # TODO: Buscar en bbdd
             if fingerprint is None:
                 status.status(label="No se encontro ninguna huella ¯\_(ツ)_/¯", state="error")
         st.json(
