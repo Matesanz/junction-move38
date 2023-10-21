@@ -1,0 +1,11 @@
+stages:
+  - Build
+  - Deploy
+
+include:
+  - project: "SngularData/cloud/cicd-templates"
+    file:
+      - "semver/bump.yaml"
+      - "docs/build.yaml"
+      - "docs/deploy.yaml"
+      - "python/build.yaml"
