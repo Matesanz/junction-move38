@@ -2,11 +2,17 @@
 
 import io
 import json
+import tempfile
 from datetime import datetime
 
+import cv2
 import fingerprinting
+import insightface
 import numpy as np
 import streamlit as st
+import transform
+from insightface.app import FaceAnalysis
+from insightface.data import get_image
 from PIL import Image
 from sqlitedict import SqliteDict
 
@@ -14,6 +20,10 @@ db = SqliteDict("traces.db", tablename="demo", autocommit=True)
 
 
 def _render_lockfile():
+    app = FaceAnalysis(
+        name="buffalo_s", providers=["CUDAExecutionProvider", "CPUExecutionProvider"]
+    )
+    app.prepare(ctx_id=0, det_size=(640, 640))
 
     level = st.selectbox(
         "Nivel",
@@ -32,6 +42,20 @@ def _render_lockfile():
     image_file = st.file_uploader("¡Sube tu imagen!", key="lockfile")
 
     if image_file is not None:
+        _, tp = tempfile.mkstemp(suffix=".jpg")
+        Image.open(image_file).save(tp)
+        det_img = get_image(tp.replace(".jpg", ""))
+        faces = app.get(det_img)
+        boxes = [np.array([int(k) for k in face["bbox"]]) for face in faces]
+        for face in faces:
+            x1, y1, x2, y2 = face["bbox"]
+            x1 = int(x1)
+            y1 = int(y1)
+            x2 = int(x2)
+            y2 = int(y2)
+            cv2.rectangle(det_img, (x1, y1), (x2, y2), (255, 0, 0), 5)
+        det_img = cv2.cvtColor(det_img, cv2.COLOR_BGR2RGB)
+        image_file = transform.apply_transform(det_img, boxes, transform.blur_transformation)
         st.image(image_file)
         download_time = datetime.now()
         metadata = {
@@ -42,9 +66,7 @@ def _render_lockfile():
             "security_level": level,
         }
 
-        fingerprinted, fingerprint = fingerprinting.fingerprint_image(
-            np.array(Image.open(image_file)), metadata
-        )
+        fingerprinted, fingerprint = fingerprinting.fingerprint_image(image_file, metadata)
         db[fingerprint] = json.dumps(metadata)
         fingerprinted_buffer = io.BytesIO()
         Image.fromarray(fingerprinted).save(fingerprinted_buffer, format="PNG")

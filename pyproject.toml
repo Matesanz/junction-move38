@@ -21,6 +21,8 @@ accelerate = "^0.23.0"
 streamlit = "^1.27.2"
 sqlitedict = "^2.1.0"
 torch = {version = "^2.1.0+cpu", source = "torch_cpu"}
+insightface = "^0.7.3"
+onnxruntime = "^1.16.1"
 
 [tool.poetry.group.dev.dependencies]
 black = "^22.8.0"
