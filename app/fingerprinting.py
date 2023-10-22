@@ -34,7 +34,7 @@ def _build_fingerprint(metadata: dict[str, any]):
 
 
 def _embed_fingerprint(cell: np.ndarray, fingerprint: str):
-    _, temp_cell = tempfile.mkstemp(".png", f"cell")
+    _, temp_cell = tempfile.mkstemp(".png", "cell")
     Image.fromarray(cell).save(temp_cell)
     fingerprinted = lsb.hide(temp_cell, fingerprint, auto_convert_rgb=True)
     fingerprinted = np.array(fingerprinted)
@@ -78,7 +78,7 @@ def fingerprint_image(image: np.ndarray, metadata: dict[str, any], grid_factor: 
     """
     cells, new_width, new_height = _build_grid(image, grid_factor)
     fingerprint = _build_fingerprint(metadata)
-    cells = map(lambda x: _embed_fingerprint(x[0], x[1], fingerprint), enumerate(cells))
+    cells = map(lambda cells: _embed_fingerprint(cells, fingerprint), cells)
     fingerprinted = _merge_cells(cells, new_width, new_height, grid_factor)
     return fingerprinted, fingerprint
 
