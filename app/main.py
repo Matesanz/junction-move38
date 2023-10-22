@@ -61,7 +61,7 @@ def _render_lockfile():
         download_time = datetime.now()
         metadata = {
             "timestamp": download_time.timestamp(),
-            "download_date": download_time.strftime("%D/%M/%Y, %H:%M:%S"),
+            "download_date": download_time.strftime("%d/%m/%Y, %H:%M:%S"),
             "parent_id": parent_id,
             "child_id": child_id,
             "security_level": level,
