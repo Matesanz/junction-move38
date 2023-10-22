@@ -92,8 +92,11 @@ def _render_unlockfile():
                 status.update(label="Huella digital encontrada!", expanded=True, state="complete")
                 st.success(fingerprint)
                 # TODO: Buscar en bbdd
-                metadata = db[fingerprint]
-                st.json(metadata)
+                try:
+                    metadata = db[fingerprint]
+                    st.json(metadata)
+                except Exception:
+                    st.error("La entrada no esta en la base de datos!")
             if fingerprint is None:
                 status.status(label="No se encontro ninguna huella ¯\_(ツ)_/¯", state="error")
 
