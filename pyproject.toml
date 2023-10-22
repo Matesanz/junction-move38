@@ -19,6 +19,8 @@ transformers = "^4.34.1"
 scipy = "^1.11.3"
 torch = {version = "^2.1.0+cpu", source = "torch_cpu"}
 accelerate = "^0.23.0"
+streamlit = "^1.27.2"
+sqlitedict = "^2.1.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^22.8.0"
