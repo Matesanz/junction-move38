@@ -55,14 +55,14 @@
 	"remoteUser": "vscode",
 	"features": {
 		// Uncomment the following to use the NVIDIA CUDA image.
-		"ghcr.io/devcontainers/features/nvidia-cuda:1": {
-			"installCudnn": true,
-			"installToolkit": true,
-			"cudaVersion": "11.8",
-			"cudnnVersion": "8.6.0.163"
-		},
-		"ghcr.io/dhoeric/features/google-cloud-cli:1": {
-			"installGkeGcloudAuthPlugin": true
-		}
+		// "ghcr.io/devcontainers/features/nvidia-cuda:1": {
+		// 	"installCudnn": true,
+		// 	"installToolkit": true,
+		// 	"cudaVersion": "11.8",
+		// 	"cudnnVersion": "8.6.0.163"
+		// },
+		// "ghcr.io/dhoeric/features/google-cloud-cli:1": {
+		// 	"installGkeGcloudAuthPlugin": true
+		// }
 	}
 }

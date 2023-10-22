@@ -20,7 +20,7 @@ scipy = "^1.11.3"
 accelerate = "^0.23.0"
 streamlit = "^1.27.2"
 sqlitedict = "^2.1.0"
-torch = {version = "^2.1.0+cu118", source = "torch_gpu"}
+torch = {version = "^2.1.0+cpu", source = "torch_cpu"}
 
 [tool.poetry.group.dev.dependencies]
 black = "^22.8.0"
