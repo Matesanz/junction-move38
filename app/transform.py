@@ -46,4 +46,4 @@ def blur_transformation(image: np.ndarray) -> np.ndarray:
         np.ndarray: _description_
     """
     # Apply a blur filter to the image
-    return cv2.GaussianBlur(image, (21, 21), 0)
+    return cv2.GaussianBlur(image, (25, 25), 0)

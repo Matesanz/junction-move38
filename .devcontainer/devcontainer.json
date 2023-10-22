@@ -10,22 +10,19 @@
 			"POETRY_VERSION": "1.6.1"
 		}
 	},
-	
 	"runArgs": [
 		"--network=host"
 	],
-
 	// Configure tool-specific properties.
 	"customizations": {
 		// Configure properties specific to VS Code.
 		"vscode": {
 			// Set *default* container specific settings.json values on container create.
-			"settings": { 
+			"settings": {
 				"python.defaultInterpreterPath": "${containerEnv:PYENV_ROOT}/versions/${containerEnv:PYTHON_VERSION}/bin/python",
 				"python.poetryPath": "poetry",
 				"pylint.importStrategy": "fromEnvironment"
 			},
-			
 			// Add the IDs of extensions you want installed when the container is created.
 			"extensions": [
 				"dbaeumer.vscode-eslint",
@@ -50,13 +47,10 @@
 				"tamasfe.even-better-toml",
 				"GitHub.copilot"
 			]
-
 		}
 	},
-
 	// Use 'postCreateCommand' to run commands after the container is created.
 	"postCreateCommand": "bash ./.devcontainer/post-install.sh",
-
 	// Comment out to connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
 	"remoteUser": "vscode",
 	"features": {
