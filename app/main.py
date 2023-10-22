@@ -14,7 +14,7 @@ db = SqliteDict("traces.db", tablename="demo", autocommit=True)
 
 
 def _render_lockfile():
-
+    st.markdown("Sube la foto, elige los datos, anonimiza, encripta, y descarga.")
     level = st.selectbox(
         "Nivel",
         [
@@ -77,7 +77,14 @@ def _render_unlockfile():
 
 def render_main():
     """Renderiza la página principal."""
-    st.title("Move38 Junction")
+    st.set_page_config(
+        page_title="SNAPGUARD",
+        page_icon="./app/assets/logo.png",
+        layout="centered",
+        initial_sidebar_state="auto",
+        menu_items=None,
+    )
+    st.image("./app/assets/banner.png")
     tab1, tab2 = st.tabs(["Proteger imagen", "Descifrar imagen"])
 
     with tab1:
