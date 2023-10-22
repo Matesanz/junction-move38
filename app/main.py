@@ -68,6 +68,7 @@ def _render_lockfile():
         }
 
         fingerprinted, fingerprint = fingerprinting.fingerprint_image(image_file, metadata)
+        Image.fromarray(fingerprinted - np.resize(image_file, fingerprinted.shape)).save("diff.png")
         db[fingerprint] = json.dumps(metadata)
         fingerprinted_buffer = io.BytesIO()
         Image.fromarray(fingerprinted).save(fingerprinted_buffer, format="PNG")
@@ -98,6 +99,17 @@ def _render_unlockfile():
                 status.status(label="No se encontro ninguna huella ¯\_(ツ)_/¯", state="error")
 
 
+def _render_about():
+    st.markdown("### ¿Qué es SnapGuard?")
+    st.markdown("SnapGuard es un pequeño guardian que protege a los más pequeños en una foto. Este pequeño guardian permite a padres y tutores elegir el nivel de privacidad de la foto a compartir, y permite trazar el origen de usos incorrectos.")
+
+    st.markdown("### ¿Cómo funciona?")
+    st.markdown("Sube una foto, elige un nivel de permisos, y descarga tu foto anonimizada y firmada. Posteriormente podrás subir una imagen firmada para recuperar la firma y la información de traza.")
+
+    st.markdown("### ¿Cómo lo hacemos?")
+    st.markdown("Usamos criptografía e inteligencia artificial generativa para anonimizar y trazar imágenes. Nuestro método es resistente a recortes y ciertas modificaciones.")
+
+
 def render_main():
     """Renderiza la página principal."""
     st.set_page_config(
@@ -108,12 +120,14 @@ def render_main():
         menu_items=None,
     )
     st.image("./app/assets/banner.png")
-    tab1, tab2 = st.tabs(["Proteger imagen", "Descifrar imagen"])
+    tab1, tab2, tab3 = st.tabs(["Proteger imagen", "Descifrar imagen", "Información"])
 
     with tab1:
         _render_lockfile()
     with tab2:
         _render_unlockfile()
+    with tab3:
+        _render_about()
 
 
 if __name__ == "__main__":
